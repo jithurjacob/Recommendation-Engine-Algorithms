@@ -57,6 +57,17 @@
             display: inline;
             vertical-align: middle;
         }
+
+        .reccomendation_item {
+            padding: 10px;
+            width: 10%;
+            height: 150px;
+            text-align: center;
+        }
+
+        .reccomendation_item {
+            text-overflow: ellipsis;
+        }
     </style>
 </head>
 
@@ -68,9 +79,25 @@
                 <hr>
                 <div class="form-group">
                     <label>Add Items to Cart:</label><br/>
-                    <input type="text" name="tags" placeholder="Type to select product" class="typeahead tm-input form-control tm-input-info" />
+                    <input type="text" name="tags" placeholder="Type to select product" class="typeahead tm-input form-control tm-input-info"
+                    />
                 </div>
-
+                <hr>
+                <h4 class="text-center">Recommendation Engine</h4>
+                <div id="recomendation_list">
+                    
+                    <div id="cf_list"class="row">
+                        <div class="col-sm-6 col-md-3">
+                            <div class="thumbnail">
+                                <img src="https://dummyimage.com/70x70/ecf0e7/5c5457.jpg&text=F" alt="...">
+                                <div class="caption">
+                                    <h4>Organic Blueberry Blitz Fruit & Veggie Smoothie Mashups</h4>
+                                    <p><a href="#" class="btn btn-primary text-center" role="button">Add to Cart</a> </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
 
             </div>
@@ -101,6 +128,20 @@
                 cb(matches);
             };
         };
+        function getRecommendations(cart_items) {
+             $.ajax({
+                url: "/getRecommendations",
+                type: 'POST',
+                data:{cart_items:JSON.stringify(cart_items)},
+                success: function (data) {
+                    console.log(data);
+                }
+             });
+        }
+        jQuery(".tm-input").on('tm:pushed', function (e, tag) {
+            getRecommendations(jQuery(".tm-input").tagsManager('tags'));
+        });
+
         function getProductData() {
             $.ajax({
                 url: "/getProductDetails",

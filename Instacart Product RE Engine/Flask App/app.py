@@ -1,4 +1,4 @@
-from flask import Flask, render_template,jsonify
+from flask import Flask, render_template,jsonify, request
 from models import recommender
 app = Flask(__name__)
 
