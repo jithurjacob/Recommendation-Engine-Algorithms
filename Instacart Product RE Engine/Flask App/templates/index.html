@@ -68,6 +68,10 @@
         .reccomendation_item {
             text-overflow: ellipsis;
         }
+
+        #recomendation_list {
+            display: none;
+        }
     </style>
 </head>
 
@@ -83,20 +87,18 @@
                     />
                 </div>
                 <hr>
-                <h4 class="text-center">Recommendation Engine</h4>
                 <div id="recomendation_list">
-                    
-                    <div id="cf_list"class="row">
-                        <div class="col-sm-6 col-md-3">
-                            <div class="thumbnail">
-                                <img src="https://dummyimage.com/70x70/ecf0e7/5c5457.jpg&text=F" alt="...">
-                                <div class="caption">
-                                    <h4>Organic Blueberry Blitz Fruit & Veggie Smoothie Mashups</h4>
-                                    <p><a href="#" class="btn btn-primary text-center" role="button">Add to Cart</a> </p>
-                                </div>
-                            </div>
-                        </div>
+                    <h4 class="text-center">Collaborative Filtering Recommendations </h4>
+
+                    <div id="cf_list" class="row">
+
                     </div>
+                    <h4 class="text-center">Deep Learning Recommendations </h4>
+
+                    <div id="dl_list" class="row">
+
+                    </div>
+
                 </div>
 
 
@@ -106,6 +108,12 @@
     <script>
         $(document).ready(function () {
             getProductData();
+            //     $('input.typeahead').keypress(function (e) {alert(e.which);
+            //         if (e.which == 13) {                   
+            //             e.preventDefault();
+            // return false;
+            //         }
+            //     });
         });
         var substringMatcher = function (strs) {
             return function findMatches(q, cb) {
@@ -129,36 +137,90 @@
             };
         };
         function getRecommendations(cart_items) {
-             $.ajax({
+            $.ajax({
                 url: "/getRecommendations",
                 type: 'POST',
-                data:{cart_items:JSON.stringify(cart_items)},
+                data: { cart_items: JSON.stringify(cart_items) },
                 success: function (data) {
+                    $("#recomendation_list").show();
                     console.log(data);
+                    $("#cf_list").children().remove();
+                    $("#dl_list").children().remove();
+                    var items_html = "";
+                    data.recommendations.CollaborativeFiltering.forEach(function (element) {
+                        items_html += ' <div class="col-sm-6 col-md-3">\
+                            <div class="thumbnail">\
+                                <img src="https://dummyimage.com/70x70/ecf0e7/5c5457.jpg&text='+ element.charAt(0) + '" alt="...">\
+                                <div class="caption">\
+                                    <h4>'+ element + '</h4>\
+                                    <p><a href="#" class="btn btn-primary text-center" role="button">Add to Cart</a> </p>\
+                                </div>\
+                            </div>\
+                        </div>';
+                    }, this);
+                    $("#cf_list").append(items_html);
+
+                    var items_html = "";
+                    data.recommendations.DeepLearning.forEach(function (element) {
+                        items_html += ' <div class="col-sm-6 col-md-3">\
+                            <div class="thumbnail">\
+                                <img src="https://dummyimage.com/70x70/ecf0e7/5c5457.jpg&text='+ element.charAt(0).toUpperCase() + '" alt="...">\
+                                <div class="caption">\
+                                    <h4>'+ element + '</h4>\
+                                    <p><a href="#" class="btn btn-primary text-center" role="button">Add to Cart</a> </p>\
+                                </div>\
+                            </div>\
+                        </div>';
+                    }, this);
+                    $("#dl_list").append(items_html);
                 }
-             });
+            });
         }
-        jQuery(".tm-input").on('tm:pushed', function (e, tag) {
+        // jQuery(".tm-input").on('tm:pushing', function(e, tag) {
+        //     console.log(products.indexOf(tag));
+        //     if(products.indexOf(tag)<0){
+        //         e.preventDefault();
+        //         return false;
+        //     }
+        // });
+        jQuery(".tm-input").on('tm:pushed', function (e, tag) { 
             getRecommendations(jQuery(".tm-input").tagsManager('tags'));
         });
-
+var products = [];
         function getProductData() {
             $.ajax({
                 url: "/getProductDetails",
                 type: 'GET',
                 success: function (data) {
+                    products = data.products;
                     console.log(data);
-                    var tagApi = $(".tm-input").tagsManager();
-
-
+                    var tagApi = $(".tm-input").tagsManager({
+                        validator:function( tag){
+                            console.log(tag,products.indexOf(tag));
+                        if(products.indexOf(tag)<0){
+                                
+                                return false;
+                            }
+                            return true;
+                        }
+                    });
                     jQuery(".typeahead").typeahead({
                         name: 'tags',
                         displayKey: 'name',
+                        // freeInput: false,
                         source: substringMatcher(data.products),
-                        afterSelect: function (item) {
+                        afterSelect: function (item) {console.log(item);
                             tagApi.tagsManager("pushTag", item);
                         }
-                    });
+                     });
+                     //.on('keyup', this, function (event) {
+                    //     console.log(event.keyCode);
+                    //     if (event.keyCode == 13) {
+                    //         alert("fk");
+                    //         event.preventDefault();
+                    //         return false;
+                    //     }
+                    // });
 
 
                     // data.recommendations.forEach(function (elem) {

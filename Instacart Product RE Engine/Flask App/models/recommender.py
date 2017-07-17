@@ -7,4 +7,4 @@ def get_recommendations(cart_items):
     return {"DeepLearning":DL_recommendations,"CollaborativeFiltering":CF_recommendations}
 
 def get_products():
-    return open("./models/product_list.txt").readlines()
+    return open("./models/product_list.txt").read().splitlines()
