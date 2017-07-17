@@ -7,7 +7,7 @@ def getRecommendations():
     """Receieves the items in cart and returns the recommendations from all models"""
     return jsonify(recommendations=recommender.get_recommendations(request.form['cart_items']))
 
-@app.route('/getProductDetails')
+@app.route('/getProductDetails',methods=['GET'])
 def getProductDetails():
     return jsonify(products=recommender.get_products())
 
