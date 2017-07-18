@@ -1,6 +1,8 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *dataset*/
+*Instacart Product RE Engine/Flask App/models/DeepLearning/model_data*
+*Instacart Product RE Engine/Tensorflow_LSTM_NLG_fullytrainedmodel/*.txt
 *.xlsx
 *.csv
 *.py[cod]
