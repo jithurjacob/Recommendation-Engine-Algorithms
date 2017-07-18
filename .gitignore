@@ -1,9 +1,11 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *dataset*/
+*.xlsx
+*.csv
 *.py[cod]
 *$py.class
-
+*model_data/
 # C extensions
 *.so
 
