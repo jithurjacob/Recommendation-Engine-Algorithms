@@ -70,4 +70,4 @@ def get_recommendations(cart_items):
     """
     return  ["placeholder1","placeholder2"]
 
-print(get_recommendations('["Milk"]'))
+#print(get_recommendations('["Milk"]'))

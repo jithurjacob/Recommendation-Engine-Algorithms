@@ -183,10 +183,10 @@
         //         return false;
         //     }
         // });
-        jQuery(".tm-input").on('tm:pushed', function (e, tag) { 
+        jQuery(".tm-input").on('tm:pushed', function (e, tag) {
             getRecommendations(jQuery(".tm-input").tagsManager('tags'));
         });
-var products = [];
+        var products = [];
         function getProductData() {
             $.ajax({
                 url: "/getProductDetails",
@@ -195,10 +195,10 @@ var products = [];
                     products = data.products;
                     console.log(data);
                     var tagApi = $(".tm-input").tagsManager({
-                        validator:function( tag){
-                            console.log(tag,products.indexOf(tag));
-                        if(products.indexOf(tag)<0){
-                                
+                        validator: function (tag) {
+                            console.log(tag, products.indexOf(tag));
+                            if (products.indexOf(tag) < 0) {
+
                                 return false;
                             }
                             return true;
@@ -209,11 +209,12 @@ var products = [];
                         displayKey: 'name',
                         // freeInput: false,
                         source: substringMatcher(data.products),
-                        afterSelect: function (item) {console.log(item);
+                        afterSelect: function (item) {
+                            console.log(item);
                             tagApi.tagsManager("pushTag", item);
                         }
-                     });
-                     //.on('keyup', this, function (event) {
+                    });
+                    //.on('keyup', this, function (event) {
                     //     console.log(event.keyCode);
                     //     if (event.keyCode == 13) {
                     //         alert("fk");
@@ -230,6 +231,15 @@ var products = [];
                 }
             })
         }
+        $.ajax({
+            url: "/getCoupons",
+            type: 'POST',
+            data: { "user_id": 10 ,"emotion":"happy"},
+            success: function (data) {
+                console.log(data);
+            }
+
+        });
     </script>
 
 </body>
