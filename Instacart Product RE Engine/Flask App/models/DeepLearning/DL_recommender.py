@@ -1,8 +1,8 @@
-import tensorflow as tf
-import numpy as np
-from tensorflow.contrib import rnn 
+# import tensorflow as tf
+# import numpy as np
+# from tensorflow.contrib import rnn 
 import json
-import pickle
+# import pickle
 """
 hm_epochs = 150
 batch_size = 500
