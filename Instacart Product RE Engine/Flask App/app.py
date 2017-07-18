@@ -11,7 +11,7 @@ def getCoupons():
 @app.route('/getRecommendations',methods=['POST'])
 def getRecommendations():
     """Receieves the items in cart and returns the recommendations from all models"""
-    return jsonify(recommendations=recommender.get_recommendations(request.form['cart_items']))
+    return jsonify(recommendations=recommender.get_recommendations(request.form['user_id']))
 
 @app.route('/getProductDetails',methods=['GET'])
 def getProductDetails():

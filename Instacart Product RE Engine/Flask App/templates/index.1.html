@@ -8,14 +8,14 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
-    <!-- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/tagmanager/3.0.2/tagmanager.min.css"> -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/tagmanager/3.0.2/tagmanager.min.css">
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-    <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tagmanager/3.0.2/tagmanager.min.js"></script> -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script> -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tagmanager/3.0.2/tagmanager.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-3-typeahead/4.0.1/bootstrap3-typeahead.min.js"></script>
 
 
 
@@ -69,19 +69,8 @@
             text-overflow: ellipsis;
         }
 
-        #recomendation_list,
-        #emotion_selector {
+        #recomendation_list {
             display: none;
-        }
-        #coupon_tile{
-            margin-top: 40px;
-                padding: 20px;
-    border: 1px solid;
-    width: 250px;
-    background-color: #676767;
-    color: white;
-    text-align: center;
-    display: none;
         }
     </style>
 </head>
@@ -92,33 +81,12 @@
             <div class="col-xs-12 col-sm-6 col-md-6 col-sm-offset-3 col-md-offset-3   quote-container">
                 <h2 class="text-center">Recommendation Engine</h2>
                 <hr>
-                <label for="user-select">Select User</label>
-                <div class="btn-group">
-                    <button id="choose_user_title" type="button" class="btn btn-default">Select User</button>
-                    <button id="choose_user" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
-                        aria-expanded="false"><span class="caret"></span><span class="sr-only">Toggle Dropdown</span></button>
-                    <ul id="choose_user_menu" class="dropdown-menu">
-
-
-
-                    </ul>
-                </div>
-                <h5 class="text-left" id="user_desc"></h5>
-
-                <div class="btn-group" role="group" data-toggle="buttons" id="emotion_selector" aria-label="...">
-                    <label class="btn btn-primary ">
-                    <input type="radio" name="user_emotions" value="Happy"  >Happy</label>
-                    <label class="btn btn-primary">
-                    <input type="radio" name="user_emotions" value="Angry" >Angry</label>
-                    <label class="btn btn-primary">
-                    <input type="radio" name="user_emotions" value="Sad" >Sad</label>
-                    <label class="btn btn-primary active">
-                    <input type="radio" name="user_emotions" value="Neutral" checked>Neutral</label>
+                <div class="form-group">
+                    <label>Add Items to Cart:</label><br/>
+                    <input type="text" name="tags" placeholder="Type to select product" class="typeahead tm-input form-control tm-input-info"
+                    />
                 </div>
                 <hr>
-                <div id="coupon_tile">
-                    No Coupon
-                </div>
                 <div id="recomendation_list">
                     <h4 class="text-center">Collaborative Filtering Recommendations </h4>
 
@@ -138,41 +106,41 @@
         </div>
     </div>
     <script>
-        var users = [];        
         $(document).ready(function () {
-            getUserData();
-        });        
-        $('#emotion_selector input[type=radio]').on('change', function () {
-            getCoupons($('#choose_user_title').attr("user-id"), $('#emotion_selector input[type=radio]:checked').val());           
+            getProductData();
+            //     $('input.typeahead').keypress(function (e) {alert(e.which);
+            //         if (e.which == 13) {                   
+            //             e.preventDefault();
+            // return false;
+            //         }
+            //     });
         });
-        $("#choose_user_menu").on("click", "li a", function () {
-            var user = $(this).text();
-            $("#choose_user_title").html(user);
-            $('#choose_user_title').attr("user-id", $(this).attr("user-id"));
-            $("#user_desc").html($(this).text() + " is a <b>" + users[$(this).attr("user-id") - 1][3] + "</b>");
-            $("#emotion_selector").show();
-            getRecommendations($(this).attr("user-id"));
-            getCoupons($(this).attr("user-id"), $('#emotion_selector input[type=radio]:checked').val());
-        });
-        function getCoupons(user_id,user_emotion){
-            $.ajax({
-                url: "/getCoupons",
-                type: 'POST',
-                data: { "user_id": $('#choose_user_title').attr("user-id"), "emotion": $('#emotion_selector input[type=radio]:checked').val()},
-                success: function (data) {
-                    
-                    console.log(data);
-                    $("#coupon_tile").show();
-                    $("#coupon_tile").text(data.coupons);
-                   
-                }
-            });
-        }
-        function getRecommendations(user_id){
+        var substringMatcher = function (strs) {
+            return function findMatches(q, cb) {
+                var matches, substringRegex;
+
+                // an array that will be populated with substring matches
+                matches = [];
+
+                // regex used to determine if a string contains the substring `q`
+                substrRegex = new RegExp(q, 'i');
+
+                // iterate through the pool of strings and for any string that
+                // contains the substring `q`, add it to the `matches` array
+                $.each(strs, function (i, str) {
+                    if (substrRegex.test(str)) {
+                        matches.push(str);
+                    }
+                });
+
+                cb(matches);
+            };
+        };
+        function getRecommendations(cart_items) {
             $.ajax({
                 url: "/getRecommendations",
                 type: 'POST',
-                data: { "user_id": 10},
+                data: { cart_items: JSON.stringify(cart_items) },
                 success: function (data) {
                     $("#recomendation_list").show();
                     console.log(data);
@@ -208,29 +176,70 @@
                 }
             });
         }
-        function getUserData() {
+        // jQuery(".tm-input").on('tm:pushing', function(e, tag) {
+        //     console.log(products.indexOf(tag));
+        //     if(products.indexOf(tag)<0){
+        //         e.preventDefault();
+        //         return false;
+        //     }
+        // });
+        jQuery(".tm-input").on('tm:pushed', function (e, tag) {
+            getRecommendations(jQuery(".tm-input").tagsManager('tags'));
+        });
+        var products = [];
+        function getProductData() {
             $.ajax({
-                url: "/getUserDetails",
+                url: "/getProductDetails",
                 type: 'GET',
                 success: function (data) {
-                    users = data.users;
+                    products = data.products;
                     console.log(data);
-                    $drop_dwn = $("#choose_user_menu");
-                    users.forEach(function (element) {
-                        $drop_dwn.append('<li><a href="#" user-id="' + element[0] + '">' + element[1] + '</a></li>');
-                    }, this);
-                }
-            });
-        }
-        // $.ajax({
-        //     url: "/getCoupons",
-        //     type: 'POST',
-        //     data: { "user_id": 10, "emotion": "happy" },
-        //     success: function (data) {
-        //         console.log(data);
-        //     }
+                    var tagApi = $(".tm-input").tagsManager({
+                        validator: function (tag) {
+                            console.log(tag, products.indexOf(tag));
+                            if (products.indexOf(tag) < 0) {
 
-        // });
+                                return false;
+                            }
+                            return true;
+                        }
+                    });
+                    jQuery(".typeahead").typeahead({
+                        name: 'tags',
+                        displayKey: 'name',
+                        // freeInput: false,
+                        source: substringMatcher(data.products),
+                        afterSelect: function (item) {
+                            console.log(item);
+                            tagApi.tagsManager("pushTag", item);
+                        }
+                    });
+                    //.on('keyup', this, function (event) {
+                    //     console.log(event.keyCode);
+                    //     if (event.keyCode == 13) {
+                    //         alert("fk");
+                    //         event.preventDefault();
+                    //         return false;
+                    //     }
+                    // });
+
+
+                    // data.recommendations.forEach(function (elem) {
+                    //     var key = Object.keys(elem)[0];
+                    //     $("#data_holidays").append("<h4>" + key + " : " + elem[key] + "</h4>");
+                    // }, this);
+                }
+            })
+        }
+        $.ajax({
+            url: "/getCoupons",
+            type: 'POST',
+            data: { "user_id": 10 ,"emotion":"happy"},
+            success: function (data) {
+                console.log(data);
+            }
+
+        });
     </script>
 
 </body>
