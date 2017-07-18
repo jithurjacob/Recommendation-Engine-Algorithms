@@ -3,6 +3,13 @@ __pycache__/
 *dataset*/
 *Instacart Product RE Engine/Flask App/models/DeepLearning/model_data*
 *Instacart Product RE Engine/Tensorflow_LSTM_NLG_fullytrainedmodel/*.txt
+*Instacart Product RE Engine/Tensorflow_LSTM_NLG_fullytrainedmodel/*
+*.meta
+*.index
+events.*
+model.data*
+checkpoint
+prod*.txt
 *.xlsx
 *.csv
 *.py[cod]
